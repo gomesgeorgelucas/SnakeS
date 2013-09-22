@@ -21,6 +21,9 @@ public class Main extends JFrame{
 		//Define redimensionamento
 		this.setResizable(false);
 		
+		// Define a saida da aplicação
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
 		//Define título do JFrame
 		this.setTitle("SnakeS");
 		
