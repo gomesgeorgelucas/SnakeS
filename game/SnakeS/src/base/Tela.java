@@ -61,8 +61,29 @@ public class Tela extends JPanel {
     //Definição de start de jogo
     private boolean play;
     
+    // Variavel de pontuação
+    private int pontuacao;
+    
+    // Variavel do tamanho do corpo
+    private int bodysize;
     
     
+	public int getBodysize() {
+		return bodysize;
+	}
+
+	public void setBodysize(int bodysize) {
+		this.bodysize = bodysize;
+	}
+
+	public int getPontuacao() {
+		return pontuacao;
+	}
+
+	public void setPontuacao(int pontuacao) {
+		this.pontuacao = pontuacao;
+	}
+
 	public boolean isPlay() {
 		return play;
 	}
@@ -269,6 +290,12 @@ public class Tela extends JPanel {
 	public void init() {
 		//Inicia o jogo
 		this.setPlay(true);
+		
+		//Inicia o tamanho do corpo como 0;
+		this.setBodysize(0);
+		
+		//Inicia a pontuação como 0;
+		this.setPontuacao(0);
 	
 		//gera posições da fruta na tela
         this.posicaoFruta();
@@ -456,6 +483,19 @@ public class Tela extends JPanel {
         { this.setPlay(false) ;}
 	}
 
+    // Método para checar se a cobrinha comeu a comida
+    public void ChkComida ()
+    {
+        // Se ele comer na mesma posição (x,y) então aumenta o corpo da cobrinha
+        // aumenta a pontuação e gera uma nova comida
+        if ((this.pontosEmX[0] == this.getFrutaX()) && (this.pontosEmY[0] == this.getFrutaY()))
+        {
+            this.pontuacao++;
+            this.bodysize++;
+            posicaoFruta();
+        }
+    }
+	
     // Método de ações durante a execução do jogo
     public void actionPerformed (ActionEvent e)
     {
