@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.sql.Time;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -14,21 +15,29 @@ public class Tela extends JPanel {
 	//Variáveis de Instância
 	private int alturaY;
 	private int larguraX;
-	private int totalPontos = 768;
-	private int tamanhoPonto = 25;
+	private int totalPontos;
+	private int tamanhoPonto;
     
 	
-    private int[] pontosEmX = new int[totalPontos];
-    private int[] pontoEmY = new int[totalPontos];
+    private int[] pontosEmX;
+    private int[] pontosEmY;
     
-
-
     private int frutaX;
     private int frutaY;
     
     //Imagem da comida
-    private Image fruta; 
+    private Image fruta;
+    private ImageIcon frutaIcone;
+    private String frutaPath;
 	
+	public ImageIcon getFrutaIcone() {
+		return frutaIcone;
+	}
+
+	public void setFrutaIcone(ImageIcon frutaIcone) {
+		this.frutaIcone = frutaIcone;
+	}
+
 	public Image getFruta() {
 		return fruta;
 	}
@@ -78,11 +87,11 @@ public class Tela extends JPanel {
 	}
 
 	public int[] getPontoEmY() {
-		return pontoEmY;
+		return pontosEmY;
 	}
 
 	public void setPontoEmY(int[] pontoEmY) {
-		this.pontoEmY = pontoEmY;
+		this.pontosEmY = pontoEmY;
 	}
 
 	public int getFrutaX() {
@@ -100,48 +109,52 @@ public class Tela extends JPanel {
 	public void setFrutaY(int frutaY) {
 		this.frutaY = frutaY;
 	}
+	
+	public String getFrutaPath() {
+		return frutaPath;
+	}
+
+	public void setFrutaPath(String frutaPath) {
+		this.frutaPath = frutaPath;
+	}
 
 	/**
 	 * Método para iniciar o jogo
-	 */
-	
+	 */	
 	public void init() {
 	
-        posicaofruta();
+        this.posicaofruta();
         
 	}
 	
 	/**
 	 * Método para gerar a posição da fruta
 	 */
-	public void posicaofruta()
-	{
-    	//Cordenadas da comida
-    	frutaX = (larguraX/2);
-    	frutaY = (alturaY/2);
+	public void posicaofruta() {    	
+    	
+    	this.setFrutaX( ( (int) (Math.random() * 13) ) *
+    							this.getTamanhoPonto());
+    	
+    	this.setFrutaY( ( (int) (Math.random() * 13) ) *
+    							this.getTamanhoPonto());
 	}
 	
 	/**
 	 * Método para abrir imagens
 	 */
-	public void abrirImagens()
-	{
-        ImageIcon frutaIcone = new ImageIcon("fruta.png");
-        fruta = frutaIcone.getImage();
-	}
-	
-	
+	public void abrirImagens() {
+        this.setFrutaIcone(new ImageIcon(this.getFrutaPath()));
+        this.setFruta(frutaIcone.getImage());
+	}	
 	
 	/**
 	 * Método para atualizar o desenho da tela
 	 */
     @Override
-    public void paint (Graphics g)
-    {
-       
+    public void paint (Graphics g) {       
         super.paint(g);
     
-        g.drawImage(fruta, frutaX, frutaY, this);
+        g.drawImage(this.getFruta(), this.getFrutaX(), this.getFrutaY(), this);
             
         Toolkit.getDefaultToolkit().sync();
 
@@ -157,21 +170,27 @@ public class Tela extends JPanel {
 		//Define área útil da tela em pixels
 		this.setLarguraX(800);
 		this.setAlturaY(600);
-				
+		
+		this.setTamanhoPonto(25);
+		this.setTotalPontos((this.getLarguraX()/this.getTamanhoPonto()) *
+								(this.getAlturaY()/this.getTamanhoPonto()));
+		
+		this.setPontosEmX(new int[this.getTotalPontos()]);
+		this.setPontoEmY(new int[this.getTotalPontos()]);
 		//Define cor fixa do fundo
-		setBackground(Color.WHITE);
+		this.setBackground(Color.WHITE);
 		
 		//Foca no painel do jogo ao abrir
-		setFocusable(true);
+		this.setFocusable(true);
+		
+		this.setFrutaPath("fruta.png");
 		
 		//Define tamanho do JPanel
-		setSize(this.getLarguraX(), this.getAlturaY());
+		this.setSize(this.getLarguraX(), this.getAlturaY());
 		
-		abrirImagens();
+		this.abrirImagens();
 		
-		init();
-
-
+		this.init();
 	}
 	
 
