@@ -4,9 +4,15 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+
+
+
 
 @SuppressWarnings("serial")
 public class Tela extends JPanel {
@@ -45,7 +51,58 @@ public class Tela extends JPanel {
     private Image cobra;
     private ImageIcon cobraIcone;
     private String cobraPath;
-	    
+	
+    // Definição dos movimentos
+    private boolean esquerda;
+    private boolean direita;
+    private boolean cima;
+    private boolean baixo;
+    
+    //Definição de start de jogo
+    private boolean play;
+    
+    
+    
+	public boolean isPlay() {
+		return play;
+	}
+
+	public void setPlay(boolean play) {
+		this.play = play;
+	}
+
+	public boolean isEsquerda() {
+		return esquerda;
+	}
+
+	public void setEsquerda(boolean esquerda) {
+		this.esquerda = esquerda;
+	}
+
+	public boolean isDireita() {
+		return direita;
+	}
+
+	public void setDireita(boolean direita) {
+		this.direita = direita;
+	}
+
+	public boolean isCima() {
+		return cima;
+	}
+
+	public void setCima(boolean cima) {
+		this.cima = cima;
+	}
+
+	public boolean isBaixo() {
+		return baixo;
+	}
+
+	public void setBaixo(boolean baixo) {
+		this.baixo = baixo;
+	}
+
 	public int getCabecaX() {
 		return cabecaX;
 	}
@@ -210,11 +267,16 @@ public class Tela extends JPanel {
 	 * Método para iniciar o jogo
 	 */	
 	public void init() {
-		
+		//Inicia o jogo
+		this.setPlay(true);
+	
 		//gera posições da fruta na tela
         this.posicaoFruta();
+   
         
         this.posicaoCobra();
+        
+        
         
 	}
 	
@@ -262,6 +324,11 @@ public class Tela extends JPanel {
     public void paint (Graphics g) {       
         super.paint(g);
         
+        
+        // Analisa se o jogo esta em andamento, se estiver desenha na tela,
+        // se não estiver, o jogo é dado como o fim
+        
+        if(isPlay()){
         g.drawImage(this.getFruta(),
         			this.getFrutaX(),
         			this.getFrutaY(),
@@ -271,10 +338,12 @@ public class Tela extends JPanel {
         			this.getCabecaX(),
         			this.getCabecaY(),
         			this);
-        
         Toolkit.getDefaultToolkit().sync();
 
         g.dispose();
+        
+        }
+ 
     }
 	
 	
@@ -286,6 +355,8 @@ public class Tela extends JPanel {
 		//Define área útil da tela em pixels
 		this.setLarguraX(800);
 		this.setAlturaY(600);
+        // Cria uma instrução de teclado
+        addKeyListener(new TAdapter());
 		
 		this.setTamanhoPonto(25);
 		this.setTotalPontos((this.getLarguraX()/this.getTamanhoPonto()) *
@@ -310,11 +381,139 @@ public class Tela extends JPanel {
 		
 		//Define tamanho do JPanel
 		this.setSize(this.getLarguraX(), this.getAlturaY());
+	
+		//Define o valor inicial dos movimentos
+		this.setEsquerda(false);
+		this.setDireita(false);
+		this.setCima(false);
+		this.setBaixo(false);
 		
+		//Abre as imagens
 		this.abrirImagens();
 		
 		this.init();
 	}
+
 	
+
+	public void move() 
+	{
+        // Para cada ponto da cobrinha desenha em (x,y)
+        for (int i = this.getTotalPontos(); i > 0; i--)
+        {
+            this.pontosEmX[i] = this.pontosEmX[(i - 1)];
+            this.pontosEmY[i] = this.pontosEmY[(i - 1)];
+        }
+
+        // Se for para esquerda decrementa em x
+        if (direita)
+        {
+            this.pontosEmX[0] -= this.getTamanhoPonto();
+        }
+
+        // Se for para direita incrementa em x
+        if (esquerda)
+        {
+        	this.pontosEmX[0] += this.getTamanhoPonto();
+        }
+
+        // Se for para cima decrementa em y
+        if (cima)
+        {
+        	this.pontosEmY[0] -= this.getTamanhoPonto();
+        }
+
+        // Se for para baixo incrementa em y
+        if (baixo)
+        {
+        	this.pontosEmY[0] += this.getTamanhoPonto();
+        }
+	}
+	
+	public void ChkColisao()
+	{
+		// Para cada ponto, verifica se este está em posição com outro ponto
+        // se estiver ele avista que o jogador parou de jogar devido a colisão
+        for (int i = this.getTotalPontos(); i > 0; i--)
+        {
+            if ((i > 4) && (this.pontosEmX[0] == this.pontosEmX[i]) && (this.pontosEmY[0] == this.pontosEmY[i]))
+            { this.setPlay(false) ; }
+            
+        }
+
+        // Verifica se a cabeça da cobrinha encostou em algum ponto (x,y)
+        // nas bordas (width,height) da tela
+        if (this.pontosEmY[0] > getAlturaY())
+        { this.setPlay(false) ; }
+
+        if (this.pontosEmY[0] < 0)
+        { this.setPlay(false) ;}
+
+        if (this.pontosEmX[0] > getLarguraX())
+        { this.setPlay(false) ;}
+
+        if (this.pontosEmX[0] < 0)
+        { this.setPlay(false) ;}
+	}
+
+    // Método de ações durante a execução do jogo
+    public void actionPerformed (ActionEvent e)
+    {
+        // Se estiver jogando então já realiza a checagem da comida, depois
+        // verifica se existe colisão, só então depois, realiza o movimento
+        // da cobrinha no jogo, por fim, redesenha os resultados
+        if (this.isPlay())
+        {
+            //checarComida();
+            ChkColisao();
+            move();
+        }
+
+        repaint();
+    }
+    private class TAdapter extends KeyAdapter
+    {
+
+        // Método para verificar o que foi teclado
+        @Override
+        public void keyPressed (KeyEvent e)
+        {
+            // Obtém o código da tecla
+            int key =  e.getKeyCode();
+
+            // Verifica os movimentos e manipula as variáveis, para movimentar
+            // corretamente sobre a tela
+            if ((key == KeyEvent.VK_LEFT) && (!direita))
+            {
+                setEsquerda(true);
+            	setCima(false);
+            	setBaixo(false);
+                
+            }
+
+            if ((key == KeyEvent.VK_RIGHT) && (!esquerda))
+            {
+            	setDireita(true);
+                setCima(false);
+                setBaixo(false);
+                
+            }
+
+            if ((key == KeyEvent.VK_UP) && (!baixo))
+            {
+            	setCima(true);
+                setEsquerda(false);
+                setDireita(false);
+                
+            }
+
+            if ((key == KeyEvent.VK_DOWN) && (!cima))
+            {
+                setBaixo(true);
+                setEsquerda(false);
+                setDireita(false);
+            }
+        }
+    }
 
 }
