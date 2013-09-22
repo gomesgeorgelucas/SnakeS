@@ -347,17 +347,59 @@ public class Tela extends JPanel implements ActionListener {
 	}
 	
 	/**
+	 * Método para checar fruta e reposicionar
+	 */
+	
+	public void checarFruta(){
+		
+		if ((this.getCabecaX() == this.getFrutaX()) && (this.getCabecaY() == this.getFrutaY()))
+        {
+            this.setTamanhoCobra(this.getTamanhoCobra()+1);
+            this.setScore(this.getScore()+10);
+            do{
+            	posicaoFruta();
+            }while((this.getCabecaX() == this.getFrutaX()) && (this.getCabecaY() == this.getFrutaY()));
+        }
+		
+	}
+	
+	/**
+	 * Checar colisão com as bordas
+	 */
+	
+	public void colidirBordas(){
+		
+		if (getCabecaY() > getAlturaY()){
+			setPlay(false); 
+		}
+
+        if (getCabecaY()  < 0){
+			setPlay(false); 
+		}
+
+        if (getCabecaX()  > getLarguraX()){
+			setPlay(false); 
+		}
+
+        if (getCabecaX() < 0){
+			setPlay(false); 
+		}
+	}
+	
+	
+	
+	/**
 	 * Método para gerar posição da cobra no mapa.
 	 */
 	public void posicaoCobra(int x, int y) {
-		if (this.getTamanhoCobra() == 1) {
+				
+		//if (this.getTamanhoCobra() == 1) {
 			this.setCabecaX(x);
 			this.setCabecaY(y);
 			
-			}
-		else {
+		//}else{
 			//NOOP
-		}
+		//}
 	}
 	
 	/**
@@ -387,6 +429,17 @@ public class Tela extends JPanel implements ActionListener {
         			this.getCabecaX(),
         			this.getCabecaY(),
         			this);
+        
+        if(this.getTamanhoCobra() > 1){
+        	for(int i = 1; i < this.getTamanhoCobra(); i++){
+        		g.drawImage(this.getCobra(),
+             			this.getCorpoX()[i],
+             			this.getCorpoY()[i],
+             			this);
+        	}
+        	
+        }
+        
         
         drawScore(g);
         
@@ -448,7 +501,44 @@ public class Tela extends JPanel implements ActionListener {
 	
 	public void move() 
 	{
-        /*
+        
+		int Cx[] , Cy[];
+		
+		Cx = getCorpoX();
+		Cy = getCorpoY();
+		
+		for(int i = 1; i < this.getTamanhoCobra() ; i++){
+			if(i == 1){
+				if(isDireita()){
+					Cx[i] = getCabecaX() - 25;
+					Cy[i] = getCabecaY();
+				}
+				
+				if(isEsquerda()){
+					Cx[i] = getCabecaX() + 25;
+					Cy[i] = getCabecaY();
+				}
+				
+				if(isCima()){
+					Cy[i] = getCabecaY() - 25;
+					Cx[i] = getCabecaX();
+				}
+				
+				if(isBaixo()){
+					Cy[i] = getCabecaY() + 25;
+					Cx[i] = getCabecaX();
+				}
+				
+			}else{
+				Cx[i + 1] = Cx[i];
+				Cy[i + 1] = Cy[i];
+			}
+		}
+		
+		this.setCorpoX(Cx);
+		this.setCorpoY(Cy);
+		
+		/*
 		// Para cada ponto da cobrinha desenha em (x,y)
         for (int i = this.getTamanhoCobra(); i > 0; i--)
         {
@@ -507,6 +597,8 @@ public class Tela extends JPanel implements ActionListener {
         // da cobrinha no jogo, por fim, redesenha os resultados
         if (this.isPlay())
         {
+        	colidirBordas();
+        	checarFruta();
             move();
         }
 
