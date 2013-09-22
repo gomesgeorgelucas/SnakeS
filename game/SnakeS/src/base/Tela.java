@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.sql.Time;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -22,14 +21,111 @@ public class Tela extends JPanel {
     private int[] pontosEmX;
     private int[] pontosEmY;
     
+    private int tamanhoCobra;
+    private int maxTamanhoCobra;
+    
+    //Pos relativa fruta
     private int frutaX;
     private int frutaY;
     
-    //Imagem da comida
+    //Imagem da fruta
     private Image fruta;
     private ImageIcon frutaIcone;
     private String frutaPath;
-	
+    
+    //Pos relativa cobra
+    private int cabecaX;
+    private int cabecaY;
+    
+    //Pos relativa do corpo
+    private int[] corpoX;
+    private int[] corpoY;
+    
+    //Imagem cobra
+    private Image cobra;
+    private ImageIcon cobraIcone;
+    private String cobraPath;
+	    
+	public int getCabecaX() {
+		return cabecaX;
+	}
+
+	public void setCabecaX(int cabecaX) {
+		this.cabecaX = cabecaX;
+	}
+
+	public int getCabecaY() {
+		return cabecaY;
+	}
+
+	public void setCabecaY(int cabecaY) {
+		this.cabecaY = cabecaY;
+	}
+
+	public int[] getCorpoX() {
+		return corpoX;
+	}
+
+	public void setCorpoX(int[] corpoX) {
+		this.corpoX = corpoX;
+	}
+
+	public int[] getCorpoY() {
+		return corpoY;
+	}
+
+	public void setCorpoY(int[] corpoY) {
+		this.corpoY = corpoY;
+	}
+
+	public int getMaxTamanhoCobra() {
+		return maxTamanhoCobra;
+	}
+
+	public void setMaxTamanhoCobra(int maxTamanhoCobra) {
+		this.maxTamanhoCobra = maxTamanhoCobra;
+	}
+
+	public Image getCobra() {
+		return cobra;
+	}
+
+	public void setCobra(Image cobra) {
+		this.cobra = cobra;
+	}
+
+	public ImageIcon getCobraIcone() {
+		return cobraIcone;
+	}
+
+	public void setCobraIcone(ImageIcon cobraIcone) {
+		this.cobraIcone = cobraIcone;
+	}
+
+	public String getCobraPath() {
+		return cobraPath;
+	}
+
+	public void setCobraPath(String cobraPath) {
+		this.cobraPath = cobraPath;
+	}
+
+	public int[] getPontosEmY() {
+		return pontosEmY;
+	}
+
+	public void setPontosEmY(int[] pontosEmY) {
+		this.pontosEmY = pontosEmY;
+	}
+
+	public int getTamanhoCobra() {
+		return tamanhoCobra;
+	}
+
+	public void setTamanhoCobra(int tamanhoCobra) {
+		this.tamanhoCobra = tamanhoCobra;
+	}
+
 	public ImageIcon getFrutaIcone() {
 		return frutaIcone;
 	}
@@ -86,14 +182,6 @@ public class Tela extends JPanel {
 		this.pontosEmX = pontosEmX;
 	}
 
-	public int[] getPontoEmY() {
-		return pontosEmY;
-	}
-
-	public void setPontoEmY(int[] pontoEmY) {
-		this.pontosEmY = pontoEmY;
-	}
-
 	public int getFrutaX() {
 		return frutaX;
 	}
@@ -122,21 +210,38 @@ public class Tela extends JPanel {
 	 * Método para iniciar o jogo
 	 */	
 	public void init() {
-	
-        this.posicaofruta();
+		
+		//gera posições da fruta na tela
+        this.posicaoFruta();
+        
+        this.posicaoCobra();
         
 	}
 	
 	/**
-	 * Método para gerar a posição da fruta
+	 * Método para gerar a posição da fruta no mapa.
 	 */
-	public void posicaofruta() {    	
+	public void posicaoFruta() {    	
     	
     	this.setFrutaX( ( (int) (Math.random() * 13) ) *
     							this.getTamanhoPonto());
     	
     	this.setFrutaY( ( (int) (Math.random() * 13) ) *
     							this.getTamanhoPonto());
+	
+	}
+	
+	/**
+	 * Método para gerar posição da cobra no mapa.
+	 */
+	public void posicaoCobra() {
+		if (this.getTamanhoCobra() == 1) {
+			this.setCabecaX(this.getLarguraX()/2);
+			this.setCabecaY(this.getAlturaY()/2);
+		}
+		else {
+			//NOOP
+		}
 	}
 	
 	/**
@@ -144,7 +249,10 @@ public class Tela extends JPanel {
 	 */
 	public void abrirImagens() {
         this.setFrutaIcone(new ImageIcon(this.getFrutaPath()));
-        this.setFruta(frutaIcone.getImage());
+        this.setFruta(this.getFrutaIcone().getImage());
+        
+        this.setCobraIcone(new ImageIcon(this.getCobraPath()));
+        this.setCobra(this.getCobraIcone().getImage());
 	}	
 	
 	/**
@@ -153,9 +261,17 @@ public class Tela extends JPanel {
     @Override
     public void paint (Graphics g) {       
         super.paint(g);
-    
-        g.drawImage(this.getFruta(), this.getFrutaX(), this.getFrutaY(), this);
-            
+        
+        g.drawImage(this.getFruta(),
+        			this.getFrutaX(),
+        			this.getFrutaY(),
+        			this);
+        
+        g.drawImage(this.getCobra(),
+        			this.getCabecaX(),
+        			this.getCabecaY(),
+        			this);
+        
         Toolkit.getDefaultToolkit().sync();
 
         g.dispose();
@@ -176,7 +292,7 @@ public class Tela extends JPanel {
 								(this.getAlturaY()/this.getTamanhoPonto()));
 		
 		this.setPontosEmX(new int[this.getTotalPontos()]);
-		this.setPontoEmY(new int[this.getTotalPontos()]);
+		this.setPontosEmY(new int[this.getTotalPontos()]);
 		//Define cor fixa do fundo
 		this.setBackground(Color.WHITE);
 		
@@ -184,6 +300,13 @@ public class Tela extends JPanel {
 		this.setFocusable(true);
 		
 		this.setFrutaPath("fruta.png");
+		this.setCobraPath("snake.png");
+		
+		this.setTamanhoCobra(1);
+		this.setMaxTamanhoCobra(1000/10);
+		
+		this.setCorpoX(new int[this.getLarguraX()/this.getTamanhoPonto()-1]);
+		this.setCorpoY(new int[this.getAlturaY()/this.getTamanhoPonto()-1]);
 		
 		//Define tamanho do JPanel
 		this.setSize(this.getLarguraX(), this.getAlturaY());
