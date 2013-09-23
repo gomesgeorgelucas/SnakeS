@@ -352,13 +352,13 @@ public class Tela extends JPanel implements ActionListener {
 	
 	public void checarFruta(){
 		
-		if ((this.getCabecaX() == this.getFrutaX()) && (this.getCabecaY() == this.getFrutaY()))
+		if ((this.getCorpoX()[0] == this.getFrutaX()) && (this.getCorpoY()[0] == this.getFrutaY()))
         {
             this.setTamanhoCobra(this.getTamanhoCobra()+1);
             this.setScore(this.getScore()+10);
             do{
             	posicaoFruta();
-            }while((this.getCabecaX() == this.getFrutaX()) && (this.getCabecaY() == this.getFrutaY()));
+            }while((this.getCorpoX()[0] == this.getFrutaX()) && (this.getCorpoY()[0] == this.getFrutaY()));
         }
 		
 	}
@@ -369,19 +369,19 @@ public class Tela extends JPanel implements ActionListener {
 	
 	public void colidirBordas(){
 		
-		if (getCabecaY() > getAlturaY()){
+		if (getCorpoY()[0] > getAlturaY()){
 			setPlay(false); 
 		}
 
-        if (getCabecaY()  < 0){
+        if (getCorpoY()[0]  < 0){
 			setPlay(false); 
 		}
 
-        if (getCabecaX()  > getLarguraX()){
+        if (getCorpoX()[0]  > getLarguraX()){
 			setPlay(false); 
 		}
 
-        if (getCabecaX() < 0){
+        if (getCorpoX()[0] < 0){
 			setPlay(false); 
 		}
 	}
@@ -394,8 +394,9 @@ public class Tela extends JPanel implements ActionListener {
 	public void posicaoCobra(int x, int y) {
 				
 		//if (this.getTamanhoCobra() == 1) {
-			this.setCabecaX(x);
-			this.setCabecaY(y);
+			
+			this.getCorpoX()[0] = x;
+			this.getCorpoY()[0] = y;
 			
 		//}else{
 			//NOOP
@@ -424,21 +425,21 @@ public class Tela extends JPanel implements ActionListener {
         			this.getFrutaX(),
         			this.getFrutaY(),
         			this);
-        
+       /* 
         g.drawImage(this.getCobra(),
         			this.getCabecaX(),
         			this.getCabecaY(),
         			this);
-        
-        if(this.getTamanhoCobra() > 1){
-        	for(int i = 1; i < this.getTamanhoCobra(); i++){
+        */
+        //if(this.getTamanhoCobra() > 1){
+        	for(int i = 0; i < this.getTamanhoCobra(); i++){
         		g.drawImage(this.getCobra(),
              			this.getCorpoX()[i],
              			this.getCorpoY()[i],
              			this);
         	}
         	
-        }
+        //}
         
         
         drawScore(g);
@@ -501,7 +502,7 @@ public class Tela extends JPanel implements ActionListener {
 	
 	public void move() 
 	{
-        
+        /*
 		int Cx[] , Cy[];
 		
 		Cx = getCorpoX();
@@ -537,6 +538,13 @@ public class Tela extends JPanel implements ActionListener {
 		
 		this.setCorpoX(Cx);
 		this.setCorpoY(Cy);
+		*/
+		
+		for (int i = this.getTamanhoCobra(); i > 0; i--)
+        {
+            this.getCorpoX()[i] = this.getCorpoX()[(i - 1)];
+            this.getCorpoY()[i] = this.getCorpoY()[(i - 1)];
+        }
 		
 		/*
 		// Para cada ponto da cobrinha desenha em (x,y)
@@ -550,29 +558,29 @@ public class Tela extends JPanel implements ActionListener {
         if (this.isDireita())
         {
             //this.pontosEmX[0] -= this.getTamanhoPonto();
-        	this.posicaoCobra(this.getCabecaX() + this.getTamanhoPonto(),
-        						this.getCabecaY());
+        	this.posicaoCobra(this.getCorpoX()[0] + this.getTamanhoPonto(),
+        						this.getCorpoY()[0]);
         }
 
         // Se for para direita incrementa em x
         if (this.isEsquerda())
         {
-        	this.posicaoCobra(this.getCabecaX() - this.getTamanhoPonto(),
-								this.getCabecaY());
+        	this.posicaoCobra(this.getCorpoX()[0] - this.getTamanhoPonto(),
+								this.getCorpoY()[0]);
         }
 
         // Se for para cima decrementa em y
         if (this.isCima())
         {
-        	this.posicaoCobra(this.getCabecaX(),
-								this.getCabecaY() - this.getTamanhoPonto());
+        	this.posicaoCobra(this.getCorpoX()[0],
+								this.getCorpoY()[0] - this.getTamanhoPonto());
         }
 
         // Se for para baixo incrementa em y
         if (this.isBaixo())
         {
-        	this.posicaoCobra(this.getCabecaX(),
-					this.getCabecaY() + this.getTamanhoPonto());
+        	this.posicaoCobra(this.getCorpoX()[0],
+					this.getCorpoY()[0] + this.getTamanhoPonto());
         }
 	}
 	
