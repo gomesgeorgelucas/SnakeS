@@ -338,11 +338,21 @@ public class Tela extends JPanel implements ActionListener {
 	 */
 	public void posicaoFruta() {    	
     	
-    	this.setFrutaX( ( (int) (Math.random() * 13) ) *
-    							this.getTamanhoPonto());
-    	
-    	this.setFrutaY( ( (int) (Math.random() * 13) ) *
-    							this.getTamanhoPonto());
+		boolean ok = true;
+		
+    	do{
+    		this.setFrutaX( ( (int) (Math.random() * 13) ) *
+					this.getTamanhoPonto());
+
+    		this.setFrutaY( ( (int) (Math.random() * 13) ) *
+					this.getTamanhoPonto());
+    		
+    		for(int i = 0; i < getTamanhoCobra(); i++){
+    			if((this.getCorpoX()[i] == this.getFrutaX()) && (this.getCorpoY()[i] == this.getFrutaY())){
+    				ok = false;
+    			}
+    		}
+        }while(!ok);
 	
 	}
 	
@@ -356,9 +366,14 @@ public class Tela extends JPanel implements ActionListener {
         {
             this.setTamanhoCobra(this.getTamanhoCobra()+1);
             this.setScore(this.getScore()+10);
-            do{
-            	posicaoFruta();
-            }while((this.getCorpoX()[0] == this.getFrutaX()) && (this.getCorpoY()[0] == this.getFrutaY()));
+            
+            setStep(getStep()-1);
+            
+            this.setRuntime(new Timer(this.getStep(), this));
+            this.getRuntime().start();
+            
+            posicaoFruta();
+            
         }
 		
 	}
@@ -493,7 +508,7 @@ public class Tela extends JPanel implements ActionListener {
 				
 		this.abrirImagens();
 		
-		this.setStep(140);
+		this.setStep(200);
 		
 		this.setPlay(true);
 		
@@ -595,6 +610,17 @@ public class Tela extends JPanel implements ActionListener {
 					(this.getAlturaY() - 10)
 					);
 		
+	}
+	
+	public void colisaoPropria(){
+		
+		for (int i = this.getTamanhoCobra(); i > 0; i--){
+			
+            if ((i > 4) && (this.getCorpoX()[0] == this.getCorpoX()[i]) && (this.getCorpoY()[0] == this.getCorpoY()[i])){
+            	setPlay(false); 
+            }
+            
+        }
 	}
 	
 	// Método de ações durante a execução do jogo
